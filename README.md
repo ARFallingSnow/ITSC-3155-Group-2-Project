@@ -11,6 +11,14 @@ Plain HTML, CSS and JavaScript. No install or build step.
 
 Without Live Server you can also just double-click `index.html` to open it in a browser.
 
+## Connect to Figma
+
+This workspace includes the official Figma MCP server configuration in `.vscode/mcp.json`.
+In VS Code, open that file and click **Start** above the `figma` server, then sign in to
+Figma and allow access when prompted. No Figma access token is stored in this project.
+
+Once connected, you can share a Figma frame or layer link in chat to work with its design.
+
 ## Files
 
 - `index.html` — page shell
