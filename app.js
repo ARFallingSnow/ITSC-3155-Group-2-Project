@@ -1,15 +1,21 @@
 // Internship app — clickable prototype (vanilla JS, no build step)
 
 const JOBS = [
+  { id: 'os', company: 'Orbit Systems', initials: 'OS', tint: '#E9DFFF', title: 'Software Engineering Intern', location: 'Charlotte, NC', locationType: 'On-site', industry: 'Software', skills: ['Java', 'CSS', 'Docker'], match: 80, term: 'Summer 2027',
+    summary: 'Build thoughtful tools used by thousands of small businesses, alongside a close-knit platform team.',
+    desc: 'Join the Orbit Systems engineering team to build practical software for small businesses. You will work with experienced engineers, contribute to production features, and learn through regular code reviews.' },
+  { id: 'nh', company: 'Northstar Health', initials: 'NH', tint: '#D6F3E9', title: 'Data Analytics Intern', location: 'Remote', locationType: 'Remote', industry: 'Healthcare', skills: ['Python', 'SQL'], match: 0, term: 'Fall 2026',
+    summary: 'Turn complex care data into clear insights that help clinical teams make better decisions.',
+    desc: 'Help Northstar Health analyze scheduling and care data. You will build useful reports with Python and SQL and collaborate with teams improving patient experiences.' },
+  { id: 'cc', company: 'Canopy Creative', initials: 'CC', tint: '#FFE7D5', title: 'Product Design Intern', location: 'Atlanta, GA', locationType: 'Hybrid', industry: 'Design', skills: ['Figma', 'Prototyping', 'CSS'], match: 33, term: 'Spring 2027',
+    summary: 'Shape digital products from early research through high-fidelity, accessible interfaces.',
+    desc: 'Work with product designers to explore user needs, prototype ideas, and polish accessible interfaces for a growing portfolio of digital products.' },
+  { id: 'bl', company: 'Brightline Labs', initials: 'BL', tint: '#DCEBFF', title: 'Frontend Developer Intern', location: 'Raleigh, NC', locationType: 'On-site', industry: 'Software', skills: ['JavaScript', 'CSS', 'Accessibility'], match: 0, term: 'Summer 2027',
+    summary: 'Create fast, inclusive web experiences for a growing portfolio of education products.',
+    desc: 'Build responsive interfaces for education products alongside designers and engineers. You will contribute accessible UI components and learn how a modern web team ships.' },
   { id: 'gm', company: 'Great Match Inc.', initials: 'GM', tint: '#D6F2E2', title: 'Junior Backend Intern', location: 'Remote', industry: 'Software', skills: ['Java', 'CSS', 'Docker'],
     summary: 'Help build and ship internal services alongside the platform team.',
     desc: 'Work with the platform team on internal services: writing Java endpoints, polishing admin screens with CSS, and packaging services with Docker for deployment. You will have a mentor and weekly code reviews for the full term.' },
-  { id: 'bl', company: 'Brightline Studio', initials: 'BS', tint: '#FBE7D3', title: 'Front-end Design Intern', location: 'Hybrid', industry: 'Design', skills: ['CSS', 'Figma'],
-    summary: 'Turn design files into responsive pages for client sites.',
-    desc: 'Pair with designers to turn Figma files into responsive, accessible pages. You will own small client updates end to end and present your work at the studio review each Friday.' },
-  { id: 'nh', company: 'Northfield Health', initials: 'NH', tint: '#DCE7F7', title: 'Data Analyst Intern', location: 'On-site', industry: 'Healthcare', skills: ['Python', 'SQL'],
-    summary: 'Clean and chart clinic data for the operations team.',
-    desc: 'Help the operations team clean scheduling data with Python and SQL, then build simple reports that show where clinics can cut wait times.' }
 ];
 
 const BASE_EVENTS = {
@@ -28,7 +34,7 @@ const state = {
   soft: ['Team player', 'Rapid development'],
   query: '', location: 'Any', industry: 'Any',
   jobId: 'gm', course: 'Docker',
-  modal: false, toast: '', day: 23, applied: [],
+  modal: false, filtersOpen: false, toast: '', day: 23, applied: [],
   notes: ['Career fair sign-ups close Friday.', 'Remind students to update their profiles before applying.']
 };
 
@@ -51,8 +57,27 @@ function filteredJobs() {
   const q = state.query.trim().toLowerCase();
   return JOBS.filter((j) =>
     (!q || `${j.title} ${j.company} ${j.industry} ${j.skills.join(' ')}`.toLowerCase().includes(q)) &&
-    (state.location === 'Any' || j.location === state.location) &&
+    (state.location === 'Any' || (j.locationType || j.location) === state.location) &&
     (state.industry === 'Any' || j.industry === state.industry));
+}
+
+function matchPercent(job) {
+  return job.match ?? Math.round(job.skills.filter(has).length / job.skills.length * 100);
+}
+
+function internshipCard(job) {
+  return `
+    <button class="internship-card" data-open="${job.id}" type="button" aria-label="View ${job.title} at ${job.company}">
+      <span class="internship-card__top">
+        <span class="company-mark" style="--company-tint:${job.tint}">${job.initials}</span>
+        <span class="match-badge">${I.search}${matchPercent(job)}% match</span>
+      </span>
+      <span class="company-name">${job.company}</span>
+      <strong class="internship-title">${job.title}</strong>
+      <span class="internship-summary">${job.summary}</span>
+      <span class="internship-meta">${I.pin}${job.location}</span>
+      <span class="internship-meta">${I.cal}${job.term || 'Fall 2026'}</span>
+    </button>`;
 }
 
 function set(patch) { Object.assign(state, patch); render(); }
@@ -61,11 +86,18 @@ function set(patch) { Object.assign(state, patch); render(); }
 const icon = (paths, size = 20, stroke = 'currentColor', w = 2) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 const I = {
-  logo: icon('<path d="M7 21V5a3 3 0 0 1 3-3h4a5 5 0 0 1 0 10H7"/><path d="M11 7h3"/>', 28, '#17784F'),
+  logo: '<span class="brand-mark" aria-hidden="true">P</span>',
   search: icon('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
   filter: icon('<path d="M4 6h16M7 12h10M10 18h4"/>'),
   cal: icon('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
   user: icon('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  applications: icon('<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6V4h8v2M3 11h18M10 11v2h4v-2"/>'),
+  book: icon('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22z"/><path d="M4 5.5v14A2.5 2.5 0 0 1 6.5 17H20"/>'),
+  bell: icon('<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'),
+  sun: icon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'),
+  moon: icon('<path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z"/>'),
+  pin: icon('<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/>'),
+  arrow: icon('<path d="M5 12h14m-6-6 6 6-6 6"/>', 16),
   company: icon('<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/>'),
   school: icon('<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>'),
   person: (s) => icon('<circle cx="12" cy="9" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/>', s, '#1E5A84', 1.8),
@@ -74,9 +106,10 @@ const I = {
 
 // ---------- screens ----------
 const CRUMBS = {
-  home: 'Student · Search', adv: 'Student · Advanced search', results: 'Student · Search results',
+  home: 'Discover', adv: 'Advanced search', results: 'Search results',
   offer: 'Student · Internship offer', course: 'Student · Skill course', profile: 'Student · My profile',
-  cal: 'Student · Calendar', company: 'Company · Profile', school: 'School · Home'
+  cal: 'Calendar', company: 'Company · Profile', school: 'School · Home',
+  applications: 'Applications', skills: 'Skill builder'
 };
 
 const jobLogo = (j, w, h, fs = 16) =>
@@ -84,28 +117,92 @@ const jobLogo = (j, w, h, fs = 16) =>
 
 const screens = {
   home() {
+    const jobs = filteredJobs();
+    const rolesToShow = state.query.trim() || state.location !== 'Any' || state.industry !== 'Any' ? jobs : jobs.slice(0, 4);
+    return `
+    <section class="discover-page">
+      <div class="discover-hero">
+        <div class="discover-hero__copy">
+          <p class="hero-eyebrow"><span aria-hidden="true">✦</span> Personalized for your skills</p>
+          <h1>Find work that moves<br>you <span>forward.</span></h1>
+          <p class="hero-description">Explore internships matched to your strengths, goals, and next big step.</p>
+        </div>
+        <div class="match-art" aria-label="86 percent profile match">
+          <span class="match-art__orbit match-art__orbit--one"></span>
+          <span class="match-art__orbit match-art__orbit--two"></span>
+          <span class="match-art__star">✦</span>
+          <span class="match-art__score"><strong>86%</strong><small>profile match</small></span>
+          <span class="match-art__briefcase">${I.applications}</span>
+        </div>
+        <form class="discover-search" data-submit="search">
+          <label class="sr-only" for="q">Role, company or skill</label>
+          <span class="discover-search__keyword">${I.search}<input id="q" type="search" data-bind="query" value="${esc(state.query)}" placeholder="Role, company or skill"></span>
+          <label class="sr-only" for="home-location">Job location</label>
+          <span class="discover-search__location">${I.pin}<select id="home-location" data-bind="location">
+            <option value="Any"${state.location === 'Any' ? ' selected' : ''}>Any location</option>
+            ${['Remote', 'Hybrid', 'On-site'].map((location) => `<option value="${location}"${state.location === location ? ' selected' : ''}>${location}</option>`).join('')}
+          </select></span>
+          <button class="search-submit" type="submit">Search roles ${I.arrow}</button>
+        </form>
+      </div>
+      <div class="discover-body">
+        <div class="section-heading">
+          <div><p class="section-eyebrow">Curated for James</p><h2>Your strongest matches</h2></div>
+          <button class="text-action" data-go="results">View all roles ${I.arrow}</button>
+        </div>
+        <div class="discovery-controls">
+          <div class="role-filters" aria-label="Filter by work location">
+            ${[['Any', 'All roles'], ['Remote', 'Remote'], ['Hybrid', 'Hybrid'], ['On-site', 'On-site']].map(([value, label]) => `
+              <button class="role-filter${state.location === value ? ' is-active' : ''}" type="button" data-location="${value}" aria-pressed="${state.location === value}">${label}</button>`).join('')}
+          </div>
+          <button class="more-filters" type="button" data-action="toggleFilters" aria-expanded="${state.filtersOpen}">${I.filter} More filters</button>
+        </div>
+        ${state.filtersOpen ? `
+          <div class="extra-filters">
+            <label for="home-industry">Industry</label>
+            <select id="home-industry" data-bind="industry">
+              ${['Any', 'Software', 'Design', 'Healthcare'].map((industry) => `<option value="${industry}"${state.industry === industry ? ' selected' : ''}>${industry === 'Any' ? 'All industries' : industry}</option>`).join('')}
+            </select>
+            <button class="text-action" type="button" data-go="adv">Advanced search ${I.arrow}</button>
+            <button class="text-action" type="button" data-action="resetFilters">Clear filters</button>
+          </div>` : ''}
+        <div class="internship-grid">
+            ${rolesToShow.map(internshipCard).join('')}
+            ${rolesToShow.length ? '' : '<div class="empty-state"><strong>No roles match those filters.</strong><span>Try a different keyword or clear your filters.</span><button class="btn" data-action="resetFilters">Clear filters</button></div>'}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  applications() {
+    const applied = JOBS.filter((job) => state.applied.includes(job.id));
     return `
     <section class="stack">
-      <div class="card lg stack-sm">
-        <h1 style="font-size:36px;line-height:1.15">Search for your future internship</h1>
-        <p class="muted" style="font-size:17px">Search by role, company or skill.</p>
-        <form class="row" data-submit="search">
-          <label for="q" class="sr-only">Search internships</label>
-          <input id="q" class="field" type="search" data-bind="query" value="${esc(state.query)}" placeholder="e.g. Java, design, Great Match" style="flex:1 1 280px;width:auto;font-size:16px">
-          <button class="btn btn-primary" type="submit">Search</button>
-        </form>
-        <div><button class="link" data-go="adv">Advanced search</button></div>
+      <div class="page-intro"><div><p class="section-eyebrow">Your job search</p><h1>Applications</h1><p class="muted">Keep track of the roles you’ve applied to.</p></div></div>
+      ${applied.length
+        ? `<div class="internship-grid">${applied.map((job) => `
+          <article class="application-card">
+            <div class="application-card__heading">${jobLogo(job, 48, 48)}<span><strong>${job.title}</strong><span>${job.company}</span></span></div>
+            <span class="application-status"><span></span> Application submitted</span>
+            <button class="text-action" data-open="${job.id}">View role ${I.arrow}</button>
+          </article>`).join('')}</div>`
+        : `<div class="empty-state"><strong>No applications yet</strong><span>Explore internships that match your goals and save your first application here.</span><button class="btn btn-primary" data-go="home">Discover roles</button></div>`}
+    </section>`;
+  },
+
+  skills() {
+    const missing = [...new Set(JOBS.flatMap((job) => job.skills))].filter((skill) => !has(skill));
+    return `
+    <section class="stack">
+      <div class="page-intro"><div><p class="section-eyebrow">Learn and grow</p><h1>Skill builder</h1><p class="muted">Build skills that open doors to your strongest-match roles.</p></div></div>
+      <div class="card skill-builder-card">
+        <div><p class="section-eyebrow">Your profile</p><h2>${state.hard.length} hard skills added</h2><p class="muted">Complete a course to add a new skill to your profile.</p></div>
+        <button class="btn" data-go="profile">Manage skills</button>
       </div>
-      <div class="stack-sm">
-        <h2 style="font-size:20px">Recommended for you</h2>
-        <div class="grid">
-          ${JOBS.map((j) => `
-            <button class="row-btn col" data-open="${j.id}">
-              ${jobLogo(j, 44, 44)}
-              <strong style="font-size:17px">${j.title}</strong>
-              <span class="muted">${j.company} · ${j.location}</span>
-              <span class="match">${matchText(j)}</span>
-            </button>`).join('')}
+      <div class="stack-sm"><h2 class="subheading">Recommended courses</h2>
+        <div class="course-list">${missing.length
+          ? missing.map((skill) => `<article class="course-card"><span class="course-card__icon">${I.book}</span><span class="course-card__copy"><strong>${esc(skill)} fundamentals</strong><span>Build practical ${esc(skill)} skills with a guided course.</span></span><button class="btn" data-course="${esc(skill)}">Explore course</button></article>`).join('')
+          : '<div class="empty-state"><strong>You’re all caught up!</strong><span>All recommended skills are already in your profile.</span></div>'}
         </div>
       </div>
     </section>`;
@@ -365,35 +462,49 @@ function render() {
   const studentFlow = ['home', 'results', 'offer', 'course'].includes(s);
   document.documentElement.dataset.theme = state.darkMode ? 'dark' : 'light';
   const navBtn = (go, label, ic, active) =>
-    `<button class="nav${active ? ' active' : ''}" data-go="${go}"${active ? ' aria-current="page"' : ''}>${ic}${label}</button>`;
+    `<button class="nav${active ? ' active' : ''}" data-go="${go}"${active ? ' aria-current="page"' : ''}>${ic}<span>${label}</span></button>`;
+  const profileStrength = Math.min(100, 38 + state.hard.length * 20);
 
   document.getElementById('app').innerHTML = `
   <div class="shell">
     <nav class="sidebar" aria-label="Main">
-      <div class="brand">${I.logo}<span>Internships</span></div>
-      <div class="nav-label">Student</div>
-      ${navBtn('home', 'Search', I.search, studentFlow)}
-      ${navBtn('adv', 'Advanced search', I.filter, s === 'adv')}
+      <button class="brand" data-go="home" aria-label="Pathway home">${I.logo}<span>Pathway</span></button>
+      <div class="nav-label">Workspace</div>
+      ${navBtn('home', 'Discover', I.search, studentFlow)}
+      ${navBtn('applications', 'Applications', I.applications, s === 'applications')}
+      ${navBtn('skills', 'Skill builder', I.book, s === 'skills' || s === 'course')}
       ${navBtn('cal', 'Calendar', I.cal, s === 'cal')}
-      ${navBtn('profile', 'My profile', I.user, s === 'profile')}
       <div class="nav-label spaced">Other views</div>
       ${navBtn('company', 'Company profile', I.company, s === 'company')}
       ${navBtn('school', 'School home', I.school, s === 'school')}
+      <div class="sidebar-spacer"></div>
+      <button class="profile-strength" data-go="profile">
+        <span class="profile-strength__heading"><span>Profile strength</span><strong>${profileStrength}%</strong></span>
+        <span class="profile-strength__track"><span style="width:${profileStrength}%"></span></span>
+        <span class="profile-strength__hint">${state.hard.length < 4 ? `Add ${4 - state.hard.length} more skill${4 - state.hard.length === 1 ? '' : 's'} to stand out.` : 'Your profile is looking great.'}</span>
+        <span class="profile-strength__link">Improve profile ${I.arrow}</span>
+      </button>
+      <button class="sidebar-user" data-go="profile">
+        <span class="user-initials">JP</span><span class="sidebar-user__copy"><strong>James Parsons</strong><small>UNC Charlotte</small></span>${I.arrow}
+      </button>
     </nav>
     <div class="content">
       <header class="topbar">
-        <div class="crumb">${CRUMBS[s]}</div>
+        <div class="topbar-title"><span>Student portal</span><strong class="crumb">${CRUMBS[s]}</strong></div>
         <div class="row topbar-actions">
-          <button class="btn" type="button" data-action="toggleTheme" aria-pressed="${state.darkMode}" aria-label="Switch to ${state.darkMode ? 'light' : 'dark'} mode">
-            ${state.darkMode ? '☀ Light mode' : '☾ Dark mode'}
+          <button class="icon-button" type="button" data-action="toggleTheme" aria-pressed="${state.darkMode}" aria-label="Switch to ${state.darkMode ? 'light' : 'dark'} mode">
+            ${state.darkMode ? I.sun : I.moon}
           </button>
-          <button class="btn" data-go="profile" aria-label="Open James Parsons's profile" style="padding:0 12px 0 6px;border-radius:999px">
-            <span class="avatar" style="width:32px;height:32px">${I.person(20)}</span>James P.
+          <button class="icon-button notification-button" type="button" data-action="notifications" aria-label="Notifications">
+            ${I.bell}<span class="notification-dot"></span>
+          </button>
+          <button class="topbar-avatar" data-go="profile" aria-label="Open James Parsons’s profile">
+            <span>JP</span>
           </button>
         </div>
       </header>
       ${state.toast ? `<div class="toast" role="status"><span>${esc(state.toast)}</span><button class="link" data-action="dismissToast">Dismiss</button></div>` : ''}
-      <main>${screens[s]()}</main>
+      <main class="${s === 'home' ? 'discover-main' : 'app-main'}">${screens[s]()}</main>
     </div>
     ${modal()}
   </div>`;
@@ -404,19 +515,25 @@ function render() {
 // ---------- actions ----------
 const actions = {
   toggleTheme: () => set({ darkMode: !state.darkMode }),
-  resetFilters: () => set({ query: '', location: 'Any', industry: 'Any' }),
+  resetFilters: () => set({ query: '', location: 'Any', industry: 'Any', filtersOpen: false }),
+  toggleFilters: () => set({ filtersOpen: !state.filtersOpen }),
+  notifications: () => set({ toast: 'You’re all caught up on notifications.' }),
   apply: () => {
     const j = currentJob();
-    set({ applied: state.applied.concat(j.id), toast: `Application sent to ${j.company}. A follow-up was added to your calendar on Oct 28.` });
+    if (!state.applied.includes(j.id)) {
+      set({ applied: state.applied.concat(j.id), toast: `Application sent to ${j.company}. A follow-up was added to your calendar on Oct 28.` });
+    }
   },
-  takeCourse: () => set({ hard: state.hard.concat(state.course), toast: `${state.course} added to your hard skills.` }),
+  takeCourse: () => {
+    if (!has(state.course)) set({ hard: state.hard.concat(state.course), toast: `${state.course} added to your hard skills.` });
+  },
   openModal: () => set({ modal: true }),
   closeModal: () => set({ modal: false }),
   dismissToast: () => set({ toast: '' })
 };
 
 document.addEventListener('click', (e) => {
-  const el = e.target.closest('[data-go],[data-open],[data-course],[data-day],[data-remove],[data-action]');
+  const el = e.target.closest('[data-go],[data-open],[data-course],[data-day],[data-remove],[data-action],[data-location]');
   if (!el) return;
   // clicking inside the modal card shouldn't close it via the overlay
   if (el.classList.contains('overlay') && e.target !== el) return;
@@ -425,6 +542,7 @@ document.addEventListener('click', (e) => {
   else if (d.open) { set({ screen: 'offer', jobId: d.open, toast: '' }); window.scrollTo(0, 0); }
   else if (d.course) set({ screen: 'course', course: d.course, toast: '' });
   else if (d.day) set({ day: Number(d.day) });
+  else if (d.location) set({ location: d.location });
   else if (d.remove) set({ hard: state.hard.filter((h) => h !== d.remove) });
   else if (d.action) actions[d.action]();
 });

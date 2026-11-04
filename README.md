@@ -1,4 +1,4 @@
-# Internship app — clickable prototype
+# Pathway — clickable student portal prototype
 
 Plain HTML, CSS and JavaScript. No install or build step.
 
@@ -24,13 +24,13 @@ Once connected, you can share a Figma frame or layer link in chat to work with i
 - `index.html` — page shell
 - `styles.css` — colors (CSS variables at the top), layout and components
 - `app.js` — sample data (`JOBS`, `BASE_EVENTS`), app state, one render function per screen in `screens`, and click/submit handlers
-- Use the **Dark mode** / **Light mode** button in the top bar to switch themes. The selection applies across screens and resets on page reload.
+- Use the theme icon in the top bar to switch between light and dark modes. The selection applies across screens and resets on page reload.
 
 ## Screens
 
-Student: Search home, Advanced search, Search results, Internship offer, Skill course, Profile (with the Update hard skills pop-up), Calendar.
+Student: Discover (keyword, work-location, and industry filters), Applications, Skill builder, Advanced search, Search results, Internship offer, Skill course, Profile (with the Update hard skills pop-up), Calendar.
 Other views: Company profile, School home.
 
-Try this flow: search → open Great Match Inc. → Docker shows as missing → Take course → Docker is added to your profile → Apply → a follow-up appears on Oct 28 in the calendar.
+Try this flow: Discover → search for Great Match Inc. → open the internship → Docker shows as missing → Take course → Docker is added to your profile → Apply → the application appears under Applications and a follow-up appears on Oct 28 in the calendar.
 
 State lives in memory, so a page reload resets it.
