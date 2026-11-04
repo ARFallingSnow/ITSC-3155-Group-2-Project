@@ -23,6 +23,7 @@ const DAYS_IN_MONTH = 31;
 
 const state = {
   screen: 'home',
+  darkMode: false,
   hard: ['Java', 'CSS'],
   soft: ['Team player', 'Rapid development'],
   query: '', location: 'Any', industry: 'Any',
@@ -362,6 +363,7 @@ function modal() {
 function render() {
   const s = state.screen;
   const studentFlow = ['home', 'results', 'offer', 'course'].includes(s);
+  document.documentElement.dataset.theme = state.darkMode ? 'dark' : 'light';
   const navBtn = (go, label, ic, active) =>
     `<button class="nav${active ? ' active' : ''}" data-go="${go}"${active ? ' aria-current="page"' : ''}>${ic}${label}</button>`;
 
@@ -381,9 +383,14 @@ function render() {
     <div class="content">
       <header class="topbar">
         <div class="crumb">${CRUMBS[s]}</div>
-        <button class="btn" data-go="profile" aria-label="Open James Parsons's profile" style="padding:0 12px 0 6px;border-radius:999px">
-          <span class="avatar" style="width:32px;height:32px">${I.person(20)}</span>James P.
-        </button>
+        <div class="row topbar-actions">
+          <button class="btn" type="button" data-action="toggleTheme" aria-pressed="${state.darkMode}" aria-label="Switch to ${state.darkMode ? 'light' : 'dark'} mode">
+            ${state.darkMode ? '☀ Light mode' : '☾ Dark mode'}
+          </button>
+          <button class="btn" data-go="profile" aria-label="Open James Parsons's profile" style="padding:0 12px 0 6px;border-radius:999px">
+            <span class="avatar" style="width:32px;height:32px">${I.person(20)}</span>James P.
+          </button>
+        </div>
       </header>
       ${state.toast ? `<div class="toast" role="status"><span>${esc(state.toast)}</span><button class="link" data-action="dismissToast">Dismiss</button></div>` : ''}
       <main>${screens[s]()}</main>
@@ -396,6 +403,7 @@ function render() {
 
 // ---------- actions ----------
 const actions = {
+  toggleTheme: () => set({ darkMode: !state.darkMode }),
   resetFilters: () => set({ query: '', location: 'Any', industry: 'Any' }),
   apply: () => {
     const j = currentJob();

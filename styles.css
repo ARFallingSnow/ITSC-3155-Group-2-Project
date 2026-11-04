@@ -11,6 +11,33 @@
   --accent-soft: #E3F1E9;
   --warn: #8A3A08;
   --warn-soft: #FBEADD;
+  --control-border: #D3D7CF;
+  --field-border: #C9CDC4;
+  --nav-hover: #E9ECE6;
+  --avatar-bg: #CFE6F5;
+  --avatar-ink: #1E5A84;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #171A18;
+  --surface: #222724;
+  --ink: #F1F4F0;
+  --ink-2: #D1D8D1;
+  --muted: #A5AEA6;
+  --line: #3A423C;
+  --soft: #2D342F;
+  --accent: #6BCB91;
+  --accent-dark: #B5E8C7;
+  --accent-soft: #263D30;
+  --warn: #FFC18F;
+  --warn-soft: #493426;
+  --control-border: #4B554D;
+  --field-border: #566158;
+  --nav-hover: #303832;
+  --avatar-bg: #294354;
+  --avatar-ink: #B4DDF5;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -41,21 +68,21 @@ main { padding: 32px; max-width: 1080px; width: 100%; }
 /* Components */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
 .card.lg { padding: 32px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #D3D7CF; background: var(--surface); cursor: pointer; font-weight: 500; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--control-border); background: var(--surface); cursor: pointer; font-weight: 500; }
 .btn:hover { background: var(--soft); }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-dark); }
 .link { background: none; border: 0; padding: 0; min-height: 44px; color: var(--accent); font-weight: 500; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-align: left; }
 .link.tight { min-height: 32px; }
 .nav { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; text-align: left; font-weight: 500; }
-.nav:hover { background: #E9ECE6; }
+.nav:hover { background: var(--nav-hover); }
 .nav.active { background: var(--accent-soft); color: var(--accent-dark); }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--soft); font-size: 14px; }
 .chip.ok { background: var(--accent-soft); color: var(--accent-dark); }
 .chip.warn { background: var(--warn-soft); color: var(--warn); }
 .chip.big { padding: 10px 16px; font-weight: 500; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.field { min-height: 44px; padding: 0 12px; border: 1px solid #C9CDC4; border-radius: 10px; background: var(--surface); width: 100%; }
+.field { min-height: 44px; padding: 0 12px; border: 1px solid var(--field-border); border-radius: 10px; background: var(--surface); width: 100%; }
 .label { font-weight: 500; }
 .muted { color: var(--muted); }
 .body { line-height: 1.6; color: var(--ink-2); }
@@ -66,7 +93,7 @@ main { padding: 32px; max-width: 1080px; width: 100%; }
 .row-btn:hover { border-color: var(--accent); }
 .row-btn.col { flex-direction: column; gap: 12px; }
 .logo { flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-.avatar { flex: none; border-radius: 50%; background: #CFE6F5; display: flex; align-items: center; justify-content: center; color: #1E5A84; font-weight: 700; }
+.avatar { flex: none; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-ink); font-weight: 700; }
 
 .toast { margin: 20px 32px 0; padding: 12px 16px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-dark); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 500; }
 .toast .link { color: var(--accent-dark); }
@@ -98,5 +125,7 @@ main { padding: 32px; max-width: 1080px; width: 100%; }
 @media (max-width: 640px) {
   main { padding: 20px 16px; }
   .topbar { padding: 12px 16px; }
+  .topbar-actions { gap: 8px; }
+  .topbar-actions .btn { padding-right: 10px; padding-left: 10px; }
   .toast { margin: 16px 16px 0; }
 }

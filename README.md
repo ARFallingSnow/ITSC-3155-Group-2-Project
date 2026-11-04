@@ -24,6 +24,7 @@ Once connected, you can share a Figma frame or layer link in chat to work with i
 - `index.html` — page shell
 - `styles.css` — colors (CSS variables at the top), layout and components
 - `app.js` — sample data (`JOBS`, `BASE_EVENTS`), app state, one render function per screen in `screens`, and click/submit handlers
+- Use the **Dark mode** / **Light mode** button in the top bar to switch themes. The selection applies across screens and resets on page reload.
 
 ## Screens
 
