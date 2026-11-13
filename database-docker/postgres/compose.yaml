@@ -1,0 +1,22 @@
+services:
+  pathway_postgresdb:
+    image: docker.io/postgres:lastest
+    container_name: pathway_postgresdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "pathway_db"
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      # I will throw SQL script to initialize the database later.
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "4100:5432" #this port is for local development, when deploy we remove it and use the internal docker network to connect to the database.
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/db_user) -d $$(cat /run/secrets/db_name)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
