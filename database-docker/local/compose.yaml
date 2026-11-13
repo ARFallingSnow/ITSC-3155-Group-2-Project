@@ -1,0 +1,30 @@
+services:
+  pathway_postgresdb:
+    image: postgres:19rc2-trixie #Recommended to pull externally
+    container_name: pathway_postgresdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "pathway_db"
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Set password as running environment for easier development
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      # I will throw SQL script to initialize the database later.
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "4100:5432" #This port is for local development, when deploy we remove it and use the internal docker network to connect to the database.
+
+    healthcheck: # Set as health check
+      test: ["CMD-SHELL", "pg_isready -U myuser -d pathway_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - backend_net
+
+  
+
+networks:
+    backend_net:
+        external: true
