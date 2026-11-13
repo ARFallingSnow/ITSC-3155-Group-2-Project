@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Pathway hard skills update mockup">
+  <title>Update Hard Skills — Pathway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="profile-skill-mockup.css">
+  <script src="profile-skill-mockup.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pathway</span></a>
+      <nav class="navigation">
+        <a class="nav-link" href="index.html"><span aria-hidden="true">⌂</span>Dashboard</a>
+        <a class="nav-link" href="index.html"><span aria-hidden="true">▤</span>Internships</a>
+        <a class="nav-link" href="index.html"><span aria-hidden="true">☆</span>Saved</a>
+        <a class="nav-link" href="index.html"><span aria-hidden="true">▣</span>Applications</a>
+        <a class="nav-link active" href="profile-mockup.html" aria-current="page"><span aria-hidden="true">♙</span>Profile</a>
+      </nav>
+      <div class="sidebar-account"><span class="avatar avatar-small">JP</span><span><strong>James Parsons</strong><small>Student Profile</small></span></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <div><h1>James Parsons</h1><p>Student profile <span aria-hidden="true">•</span> Skills, experience, and career readiness</p></div>
+        <div class="header-actions">
+          <button class="button button-light button-compact" type="button" data-action="notifications">♧ Notifications</button>
+          <button class="button button-light button-compact" type="button">● Edit profile</button>
+        </div>
+      </header>
+
+      <div class="profile-layout">
+        <section class="profile-overview" aria-label="Profile overview">
+          <div class="identity">
+            <span class="avatar avatar-large">JP</span>
+            <h2>James Parsons</h2>
+            <p class="muted">Student profile</p>
+            <div class="identity-actions"><span class="tag">Student</span><button class="text-button" type="button">Add career preferences</button></div>
+            <p class="identity-hint">Showcase your skills and your background to help employers get to know you.</p>
+          </div>
+          <div class="overview-cards">
+            <section class="panel skills-panel" aria-labelledby="skills-title">
+              <div class="section-heading"><h3 id="skills-title">Skills</h3><button class="edit-button" type="button" data-action="open-skills">Edit hard skills</button></div>
+              <div class="skills-columns">
+                <div><p class="field-label">Hard Skills</p><p class="skill-values" data-hard-skills>Java + CSS</p><p class="helper-text">Core technologies and tools</p></div>
+                <div><p class="field-label">Soft Skills</p><p class="skill-values">Team player + Rapid development</p><p class="helper-text">Collaboration and delivery strengths</p></div>
+              </div>
+            </section>
+            <section class="panel completion-panel" aria-labelledby="completion-title">
+              <h3 id="completion-title">Profile completion</h3>
+              <ul class="completion-list">
+                <li><span class="check" aria-hidden="true">✓</span>Add a resume</li>
+                <li><span class="check" aria-hidden="true">✓</span>Complete your bio</li>
+                <li><span class="check" aria-hidden="true">✓</span>Add education and experience</li>
+              </ul>
+            </section>
+          </div>
+        </section>
+
+        <div class="detail-grid">
+          <div class="detail-main">
+            <section class="panel detail-panel"><h3>Biography</h3><p class="detail-copy">Add a short introduction about your interests, background, and career goals.</p><p class="helper-text">Tip: Write a short, clear summary of your background, interests, and career goals.</p></section>
+            <section class="panel detail-panel"><h3>Experience</h3><p class="detail-copy">Add internships, projects, volunteer roles, or relevant coursework to show your practical experience.</p><button class="button button-subtle button-small" type="button">Add experience →</button></section>
+            <section class="panel detail-panel"><h3>Education</h3><p class="detail-copy">Add your current or previous institutions, degrees, and relevant academic highlights.</p><button class="button button-subtle button-small" type="button">Add education →</button></section>
+          </div>
+          <aside class="detail-aside" aria-label="Profile resources">
+            <section class="panel resource-panel"><h3>Resume</h3><p class="detail-copy">Upload a PDF or file to your latest resume to make it easy for recruiters to review your experience.</p><button class="button button-subtle button-small" type="button">Upload resume →</button></section>
+            <section class="panel stats-panel"><h3>Profile stats</h3><div class="stats-grid"><div class="stat">Profile views<strong>—</strong></div><div class="stat">Saved by<strong>—</strong></div><div class="stat">Applications<strong>—</strong></div><div class="stat">Completion<strong>—</strong></div></div></section>
+            <section class="panel resource-panel"><h3>Career guide</h3><p class="detail-copy">Use the Pathway career guide to review resume tips, interview prep, and application best practices.</p><button class="button button-subtle career-button" type="button">View Career Guide →</button></section>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" data-modal-backdrop>
+    <section class="skill-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+      <div class="dialog-copy">
+        <h2 id="dialog-title">Update Hard Skills</h2>
+        <p id="dialog-description">Add <span data-selected-skill-copy>Docker</span> to your hard skills and submit changes to your profile.</p>
+      </div>
+      <div class="dialog-actions">
+        <div class="selected-skill">
+          <label for="skill-choice">Selected skill</label>
+          <select id="skill-choice" aria-label="Selected hard skill">
+            <option>Docker</option>
+            <option>Python</option>
+            <option>Figma</option>
+            <option>SQL</option>
+            <option>JavaScript</option>
+            <option>Java</option>
+            <option>CSS</option>
+          </select>
+          <p data-selection-hint>This skill will be added to your hard skills section and visible to employers.</p>
+        </div>
+        <button class="button button-primary submit-button" type="button" data-action="submit-skill">Submit Changes</button>
+      </div>
+      <button class="dialog-close" type="button" aria-label="Close dialog" data-action="close-skills">×</button>
+    </section>
+  </div>
+  <div class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
