@@ -1,5 +1,3 @@
-// Confetti burst for profile updates.
-// Include after your main script: <script src="confetti.js" defer></script>
 (function () {
   const COLORS = ['#2874f0', '#36d3a0', '#ffb547', '#ff6b8b', '#9b7bff', '#4a96ff'];
 
