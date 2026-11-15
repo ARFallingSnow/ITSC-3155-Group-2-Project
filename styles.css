@@ -230,6 +230,7 @@ main { padding: 32px; max-width: 1200px; width: 100%; }
   position: relative;
   overflow: hidden;
   padding: 64px clamp(36px, 5.5vw, 84px) 0;
+  padding-bottom: 90px !important;
   color: #F3F8F3;
   background:
     radial-gradient(ellipse at 82% 45%, rgba(84, 138, 91, .26), transparent 34%),
