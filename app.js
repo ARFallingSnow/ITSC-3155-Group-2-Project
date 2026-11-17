@@ -542,6 +542,12 @@ function render() {
   if (state.modal) document.getElementById('ns')?.focus();
 }
 
+// ---------- confetti ----------
+// launchConfetti comes from confetti.js (loaded in index.html before app.js).
+function celebrate() {
+  if (typeof window.launchConfetti === 'function') window.launchConfetti();
+}
+
 // ---------- actions ----------
 const actions = {
   toggleTheme: () => set({ darkMode: !state.darkMode }),
@@ -552,6 +558,7 @@ const actions = {
     const j = currentJob();
     if (!state.applied.includes(j.id)) {
       set({ applied: state.applied.concat(j.id), toast: `Application sent to ${j.company}. A follow-up was added to your calendar on Oct 28.` });
+      celebrate();
     }
   },
   takeCourse: () => {
@@ -560,6 +567,7 @@ const actions = {
       const res = HardSkillsRepository.save(updated);
       if (res.ok) {
         set({ hard: updated, toast: `${state.course} added to your hard skills.` });
+        celebrate();
       } else {
         set({ toast: res.error });
       }
@@ -624,6 +632,7 @@ document.addEventListener('submit', (e) => {
     const res = HardSkillsRepository.save(updated);
     if (res.ok) {
       set({ hard: updated, skillError: '' });
+      celebrate();
     } else {
       set({ skillError: res.error });
     }
