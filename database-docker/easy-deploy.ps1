@@ -6,9 +6,10 @@ function New-RandomPassword {
 }
 
 # Helper function to pass POSTGRES_PASSWORD strictly to Docker Compose
+# NOTE!!! had to update file path to reflect file structure -AJR
 function Start-LocalCompose {
     param (
-        [string]$ComposeFile = "./local/compose.yaml"
+        [string]$ComposeFile = "database-docker/local/compose.yaml"
     )
 
     if (-not (Test-Path $ComposeFile)) {
