@@ -1,15 +1,9 @@
-# Helper function to generate a random alphanumeric password
-function New-RandomPassword {
-    param ([int]$Length = 20)
-    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    -join ((1..$Length) | ForEach-Object { $chars[(Get-Random -Maximum $chars.Length)] })
-}
-
-# Helper function to pass POSTGRES_PASSWORD strictly to Docker Compose
+# Helper function to build with DB_PASSWORD build-arg and start Docker Compose
 # NOTE!!! had to update file path to reflect file structure -AJR
 function Start-LocalCompose {
     param (
-        [string]$ComposeFile = "database-docker/local/compose.yaml"
+        [string]$ComposeFile = "database-docker/local/compose.yaml",
+        [string]$NetworkName = "backend_net"
     )
 
     if (-not (Test-Path $ComposeFile)) {
@@ -17,58 +11,40 @@ function Start-LocalCompose {
         return
     }
 
+    # Check if the required Docker network exists
+    Write-Host "Checking for Docker network '$NetworkName'..." -ForegroundColor Cyan
+    docker network inspect $NetworkName *>$null
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Network '$NetworkName' not found. Creating it now..." -ForegroundColor Yellow
+        docker network create $NetworkName | Out-Null
+        
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to create Docker network '$NetworkName'. Aborting deployment."
+            return
+        }
+        Write-Host "Network '$NetworkName' created successfully." -ForegroundColor Green
+    } else {
+        Write-Host "Network '$NetworkName' already exists." -ForegroundColor Green
+    }
+
     $generatedPassword = New-RandomPassword
 
-    # Create a temporary .env file in memory/temp directory so Windows env stays clean
-    $tempEnvFile = [System.IO.Path]::GetTempFileName()
-    "POSTGRES_PASSWORD=$generatedPassword" | Out-File -FilePath $tempEnvFile -Encoding utf8
+    Write-Host "`nBuilding image with DB_PASSWORD build argument..." -ForegroundColor Cyan
+    docker compose -f $ComposeFile build --build-arg "DB_PASSWORD=$generatedPassword"
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to build Docker Compose services."
+        return
+    }
 
     Write-Host "`nStarting Docker Compose..." -ForegroundColor Cyan
+    docker compose -f $ComposeFile up -d
 
-    try {
-        # --env-file passes the variable strictly to Docker Compose for container interpolation
-        docker compose --env-file $tempEnvFile -f $ComposeFile up -d
-
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "`nSuccess! Containers are running." -ForegroundColor Green
-            Write-Host "Generated Container POSTGRES_PASSWORD: $generatedPassword" -ForegroundColor Magenta
-        } else {
-            Write-Error "Failed to start Docker Compose."
-        }
-    }
-    finally {
-        # Always delete the temporary file so the password isn't left sitting on disk
-        if (Test-Path $tempEnvFile) {
-            Remove-Item $tempEnvFile -Force
-        }
-    }
-}
-
-# --- Main Execution ---
-
-$dockerInstalled = $null -ne (Get-Command docker -ErrorAction SilentlyContinue)
-$composeInstalled = $false
-
-if ($dockerInstalled) {
-    docker compose version *>$null
-    $composeInstalled = ($LASTEXITCODE -eq 0)
-}
-
-if ($dockerInstalled -and $composeInstalled) {
-    Write-Host "Docker and Docker Compose are already installed:" -ForegroundColor Green
-    docker --version
-    docker compose version
-
-    Start-LocalCompose
-} else {
-    Write-Host "Docker or Docker Compose is missing. Installing Docker CLI via winget..." -ForegroundColor Yellow
-    winget install -e --id Docker.DockerCLI --accept-source-agreements --accept-package-agreements
-    
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-    
-    if ($null -ne (Get-Command docker -ErrorAction SilentlyContinue)) {
-        Start-LocalCompose
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "`nSuccess! Containers are running." -ForegroundColor Green
+        Write-Host "Generated DB_PASSWORD: $generatedPassword" -ForegroundColor Magenta
     } else {
-        Write-Warning "Please restart your terminal to update PATH, then re-run this script."
+        Write-Error "Failed to start Docker Compose."
     }
 }
