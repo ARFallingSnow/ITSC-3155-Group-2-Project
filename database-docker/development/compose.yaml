@@ -1,6 +1,6 @@
 services:
   pathway_postgresdb:
-    image: postgres:19rc2-trixie #Recommended to pull externally
+    image: docker.io/postgres:19rc2-trixie #Recommended to pull externally
     container_name: pathway_postgresdb
     restart: unless-stopped
     environment:
@@ -8,9 +8,6 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --data-checksums"
-
-    ports:
-      - "4100:5432" #This port is for local development, when deploy we remove it and use the internal docker network to connect to the database.
 
     volumes:
       - ./data:/var/lib/postgresql/data
@@ -23,9 +20,9 @@ services:
       - db_name
 
     volumes:
-      - pg_data:/var/lib/postgresql
-      - ./certs/server.crt:/var/lib/postgresql/server.crt:ro
-      - ./certs/server.key:/var/lib/postgresql/server.key:ro
+      - pg_data:/var/lib/postgresql:Z
+      - ./certs/server.crt:/var/lib/postgresql/server.crt:ro,Z
+      - ./certs/server.key:/var/lib/postgresql/server.key:ro,Z
 
     command: >
       postgres
@@ -47,7 +44,8 @@ services:
 
 networks:
     backend_net:
-        external: true
+      driver: bridge
+      external: true
 
 
 secrets:
@@ -58,5 +56,5 @@ secrets:
   db_name:
     file: ./secrets/db_name.txt
 
-volumes:
+data_volumes:
   pg_data:./data

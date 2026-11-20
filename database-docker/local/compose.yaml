@@ -1,6 +1,6 @@
 services:
   pathway_postgresdb:
-    image: postgres:19rc2-trixie #Recommended to pull externally
+    image: docker.io/postgres:19rc2-trixie #Recommended to pull externally
     container_name: pathway_postgresdb
     restart: unless-stopped
     environment:
@@ -27,4 +27,5 @@ services:
 
 networks:
     backend_net:
-        external: true
+      driver: bridge
+      external: true
