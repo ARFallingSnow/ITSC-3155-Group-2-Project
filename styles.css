@@ -230,6 +230,7 @@ main { padding: 32px; max-width: 1200px; width: 100%; }
   position: relative;
   overflow: hidden;
   padding: 64px clamp(36px, 5.5vw, 84px) 0;
+  padding-bottom: 90px !important;
   color: #F3F8F3;
   background:
     radial-gradient(ellipse at 82% 45%, rgba(84, 138, 91, .26), transparent 34%),
@@ -467,4 +468,29 @@ main { padding: 32px; max-width: 1200px; width: 100%; }
   .internship-summary { min-height: 0; }
   .skill-builder-card, .course-card { align-items: flex-start; flex-direction: column; }
   .course-card__copy { flex: none; }
+}
+
+/* Confetti (used by confetti.js) */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
+}
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: var(--w);
+  height: var(--h);
+  background: var(--c);
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-fall var(--dur) cubic-bezier(.25,.6,.5,1) var(--delay) forwards;
+}
+.confetti-piece.round { border-radius: 50%; }
+@keyframes confetti-fall {
+  0%   { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--drift), 105vh, 0) rotate(var(--spin)); }
 }

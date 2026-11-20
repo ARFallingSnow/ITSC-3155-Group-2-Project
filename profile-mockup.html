@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="profile-mockup.css">
   <script src="profile-mockup.js" defer></script>
+  <script src="confetti.js" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -30,7 +32,7 @@
         <span class="sidebar-account__text"><strong data-name>James Parsons</strong><small>Student Profile</small></span>
       </div>
     </aside>
-
+ 
     <main class="main-content">
       <header class="page-header">
         <div>
@@ -46,7 +48,7 @@
           </button>
         </div>
       </header>
-
+ 
       <div class="profile-layout">
         <section class="profile-overview" aria-label="Profile overview">
           <div class="identity">
@@ -59,7 +61,7 @@
             </div>
             <p class="identity-hint">Showcase your skills and your background to help employers get to know you.</p>
           </div>
-
+ 
           <div class="overview-cards">
             <section class="panel skills-panel" aria-labelledby="skills-title">
               <h3 id="skills-title">Skills</h3>
@@ -76,7 +78,7 @@
                 </div>
               </div>
             </section>
-
+ 
             <section class="panel completion-panel" aria-labelledby="completion-title">
               <h3 id="completion-title">Profile completion</h3>
               <ul class="completion-list">
@@ -87,7 +89,7 @@
             </section>
           </div>
         </section>
-
+ 
         <div class="detail-grid">
           <div class="detail-main">
             <section class="panel detail-panel" aria-labelledby="bio-title">
@@ -99,7 +101,7 @@
               <div class="preferences" data-preferences hidden></div>
               <p class="helper-text">Tip: Write a short, clear summary of your background, interests, and career goals.</p>
             </section>
-
+ 
             <section class="panel detail-panel" aria-labelledby="experience-title">
               <div class="section-heading">
                 <h3 id="experience-title">Experience</h3>
@@ -110,7 +112,7 @@
               </div>
               <button class="button button-subtle button-small" type="button" data-action="add-experience">Add experience <span aria-hidden="true">→</span></button>
             </section>
-
+ 
             <section class="panel detail-panel" aria-labelledby="education-title">
               <div class="section-heading">
                 <h3 id="education-title">Education</h3>
@@ -122,7 +124,7 @@
               <button class="button button-subtle button-small" type="button" data-action="add-education">Add education <span aria-hidden="true">→</span></button>
             </section>
           </div>
-
+ 
           <aside class="detail-aside" aria-label="Profile resources">
             <section class="panel resource-panel" aria-labelledby="resume-title">
               <h3 id="resume-title">Resume</h3>
@@ -130,7 +132,7 @@
               <label class="button button-subtle button-small upload-button" for="resume-upload">Upload resume <span aria-hidden="true">→</span></label>
               <input id="resume-upload" class="visually-hidden" type="file" accept=".pdf,.doc,.docx">
             </section>
-
+ 
             <section class="panel stats-panel" aria-labelledby="stats-title">
               <h3 id="stats-title">Profile stats</h3>
               <div class="stats-grid">
@@ -140,7 +142,7 @@
                 <div class="stat"><span>Completion</span><strong>—</strong></div>
               </div>
             </section>
-
+ 
             <section class="panel resource-panel career-panel" aria-labelledby="career-title">
               <h3 id="career-title">Career guide</h3>
               <p class="detail-copy">Use the Pathway career guide to review resume tips, interview prep, and application best practices.</p>
@@ -152,7 +154,7 @@
       <div class="toast" role="status" aria-live="polite" hidden></div>
     </main>
   </div>
-
+ 
   <dialog class="edit-dialog" aria-labelledby="dialog-title">
     <form method="dialog" class="dialog-form" id="profile-form">
       <div class="dialog-heading">
@@ -168,3 +170,4 @@
   </dialog>
 </body>
 </html>
+ 

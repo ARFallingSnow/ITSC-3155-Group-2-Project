@@ -27,14 +27,43 @@ const TODAY = 20;          // October 20, 2026
 const FIRST_WEEKDAY = 4;   // Oct 1, 2026 is a Thursday (Sun = 0)
 const DAYS_IN_MONTH = 31;
 
+// ---------- data-access / persistence adapter ----------
+// Currently persists to browser localStorage; swap load()/save() to fetch() once backend ORM endpoints are pushed.
+const HardSkillsRepository = {
+  STORAGE_KEY: 'pathway_student_hard_skills_v1',
+  DEFAULT_SKILLS: ['Java', 'CSS'],
+
+  load() {
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (!raw) return [...this.DEFAULT_SKILLS];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [...this.DEFAULT_SKILLS];
+    } catch (err) {
+      console.error('Failed to load hard skills:', err);
+      return [...this.DEFAULT_SKILLS];
+    }
+  },
+
+  save(skills) {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(skills));
+      return { ok: true };
+    } catch (err) {
+      console.error('Failed to save hard skills:', err);
+      return { ok: false, error: 'Unable to save skills locally. Storage may be disabled or full.' };
+    }
+  }
+};
+
 const state = {
   screen: 'home',
   darkMode: false,
-  hard: ['Java', 'CSS'],
+  hard: HardSkillsRepository.load(),
   soft: ['Team player', 'Rapid development'],
   query: '', location: 'Any', industry: 'Any',
   jobId: 'gm', course: 'Docker',
-  modal: false, filtersOpen: false, toast: '', day: 23, applied: [],
+  modal: false, skillError: '', filtersOpen: false, toast: '', day: 23, applied: [],
   notes: ['Career fair sign-ups close Friday.', 'Remind students to update their profiles before applying.']
 };
 
@@ -448,10 +477,11 @@ function modal() {
       </div>
       <form class="row" data-submit="addSkill" style="gap:8px;flex-wrap:nowrap">
         <label for="ns" class="sr-only">New hard skill</label>
-        <input id="ns" name="skill" class="field" type="text" placeholder="Add a skill, e.g. SQL" autofocus>
+        <input id="ns" name="skill" class="field" type="text" maxlength="40" placeholder="Add a skill, e.g. SQL" autofocus>
         <button class="btn" type="submit">Add</button>
       </form>
-      <div class="row" style="justify-content:flex-end"><button class="btn btn-primary" data-action="closeModal">Save changes</button></div>
+      ${state.skillError ? `<p role="alert" style="color:#B42318;font-size:14px;margin:0">${esc(state.skillError)}</p>` : ''}
+      <div class="row" style="justify-content:flex-end"><button class="btn btn-primary" data-action="closeModal">Done</button></div>
     </div>
   </div>`;
 }
@@ -512,6 +542,12 @@ function render() {
   if (state.modal) document.getElementById('ns')?.focus();
 }
 
+// ---------- confetti ----------
+// launchConfetti comes from confetti.js (loaded in index.html before app.js).
+function celebrate() {
+  if (typeof window.launchConfetti === 'function') window.launchConfetti();
+}
+
 // ---------- actions ----------
 const actions = {
   toggleTheme: () => set({ darkMode: !state.darkMode }),
@@ -522,13 +558,23 @@ const actions = {
     const j = currentJob();
     if (!state.applied.includes(j.id)) {
       set({ applied: state.applied.concat(j.id), toast: `Application sent to ${j.company}. A follow-up was added to your calendar on Oct 28.` });
+      celebrate();
     }
   },
   takeCourse: () => {
-    if (!has(state.course)) set({ hard: state.hard.concat(state.course), toast: `${state.course} added to your hard skills.` });
+    if (!has(state.course)) {
+      const updated = state.hard.concat(state.course);
+      const res = HardSkillsRepository.save(updated);
+      if (res.ok) {
+        set({ hard: updated, toast: `${state.course} added to your hard skills.` });
+        celebrate();
+      } else {
+        set({ toast: res.error });
+      }
+    }
   },
-  openModal: () => set({ modal: true }),
-  closeModal: () => set({ modal: false }),
+  openModal: () => set({ modal: true, skillError: '' }),
+  closeModal: () => set({ modal: false, skillError: '' }),
   dismissToast: () => set({ toast: '' })
 };
 
@@ -543,7 +589,15 @@ document.addEventListener('click', (e) => {
   else if (d.course) set({ screen: 'course', course: d.course, toast: '' });
   else if (d.day) set({ day: Number(d.day) });
   else if (d.location) set({ location: d.location });
-  else if (d.remove) set({ hard: state.hard.filter((h) => h !== d.remove) });
+  else if (d.remove) {
+    const updated = state.hard.filter((h) => h !== d.remove);
+    const res = HardSkillsRepository.save(updated);
+    if (res.ok) {
+      set({ hard: updated, skillError: '' });
+    } else {
+      set({ skillError: res.error });
+    }
+  }
   else if (d.action) actions[d.action]();
 });
 
@@ -561,7 +615,27 @@ document.addEventListener('submit', (e) => {
   if (kind === 'search') set({ screen: 'results', toast: '' });
   if (kind === 'addSkill') {
     const v = form.skill.value.trim();
-    if (v && !state.hard.includes(v)) set({ hard: state.hard.concat(v) }); else render();
+    if (!v) {
+      set({ skillError: 'Please enter a skill name before adding.' });
+      return;
+    }
+    if (v.length > 40) {
+      set({ skillError: 'Skill name must be 40 characters or fewer.' });
+      return;
+    }
+    const isDuplicate = state.hard.some((s) => s.toLowerCase() === v.toLowerCase());
+    if (isDuplicate) {
+      set({ skillError: `"${v}" is already in your hard skills.` });
+      return;
+    }
+    const updated = state.hard.concat(v);
+    const res = HardSkillsRepository.save(updated);
+    if (res.ok) {
+      set({ hard: updated, skillError: '' });
+      celebrate();
+    } else {
+      set({ skillError: res.error });
+    }
   }
   if (kind === 'addNote') {
     const v = form.note.value.trim();
